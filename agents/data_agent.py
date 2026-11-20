@@ -5,6 +5,13 @@ from langgraph.graph import StateGraph, END, START
 from agents.etl_analyst import etl_analyst
 from agents.sql_analyst import sql_analyst
 from typing import  Literal
+import psycopg
+from langgraph.checkpoint.postgres import PostgresSaver
+from psycopg.rows import dict_row
+import os
+from dotenv import load_dotenv
+load_dotenv()
+
 
 llm = pick_llm('medium')
 
@@ -61,7 +68,17 @@ data_agent_graph.add_edge("sql_node", END)
 
 
 
-data_agent  = data_agent_graph.compile()
+_conn = psycopg.connect(
+    os.getenv("DB_URI"),
+    autocommit=True,
+    row_factory=dict_row
+)
+
+checkpointer = PostgresSaver(_conn)
+checkpointer.setup()
+
+data_agent  = data_agent_graph.compile(checkpointer=checkpointer)
+
 
 
 if __name__ == "__main__":
@@ -69,7 +86,8 @@ if __name__ == "__main__":
   response = data_agent.invoke(
     {
        "messages":[HumanMessage(content="Sab se zyada cancel karne wale 5 riders kaun hain? saath mn unka names bhi btao")],
-    }
+    },
+    {"configurable": {"thread_id": "1"}}
     )
 
   print(response['messages'][-1].content)
