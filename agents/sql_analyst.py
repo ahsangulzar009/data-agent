@@ -141,10 +141,10 @@ graph.add_edge("represent_final_answer", END)
 sql_analyst =  graph.compile()
 
 
-if __name__ == "__main__":
-    user_input = {"user_question": "Sweep out all the records of users who live in Vancouver, we don't need them anymore."}
-    result = sql_analyst.invoke(user_input)
+# if __name__ == "__main__":
+#     user_input = {"user_question": "Sweep out all the records of users who live in Vancouver, we don't need them anymore."}
+#     result = sql_analyst.invoke(user_input)
 
-    print("SQL:\n", result.get("generated_sql_query"))
-    print("\nRAW RESULT:\n", result.get("sql_query_execution_result"))
-    print("\nFINAL ANSWER:\n", result.get("final_answer"))
+#     print("SQL:\n", result.get("generated_sql_query"))
+#     print("\nRAW RESULT:\n", result.get("sql_query_execution_result"))
+#     print("\nFINAL ANSWER:\n", result.get("final_answer"))

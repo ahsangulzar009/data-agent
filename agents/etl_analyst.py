@@ -1,7 +1,7 @@
 from utils.llm_pick import pick_llm
 from utils.etl_tools import ETLTools
 from models.schema import ETLAgentSchema
-from langchain_core.messages import HumanMessage
+from langchain_core.messages import SystemMessage
 from langgraph.graph import StateGraph, END, START
 from langchain.tools import tool
 from langgraph.prebuilt import ToolNode, tools_condition
@@ -70,14 +70,17 @@ llm_bind = pick_llm("hard").bind_tools(tools)
 
 
 def llm_node(state: ETLAgentSchema):
-   prompt = f"""
-            You are a Python Data Analyst who has access to tools that can extract and load, 
-            transform and load data. You will be provided with a user's question 
-            and you would need to perform the right ETL operations as per the user's question. 
-            If the operation is performed then inform the user and end the coversation.
-            Here's the chat history: {state.messages}\n
-          """
-   final_answer = llm_bind.invoke(prompt)  
+   SYSTEM_PROMPT = SystemMessage(
+      content="""You are a Python Data Analyst with access to tools for
+        extract-and-load and transform-and-load operations.
+
+        Rules:
+          - ALWAYS call the appropriate tool to perform the user's request.
+          - Never claim an operation is done unless a ToolMessage in THIS conversation confirms it.
+          - After a tool result confirms success, reply with a short summary and stop."""
+    )
+   
+   final_answer = llm_bind.invoke([SYSTEM_PROMPT] + state.messages) 
 
    return {"messages": [final_answer]}
 
@@ -95,19 +98,21 @@ graph.add_edge("tools", "llm_node")
 etl_analyst = graph.compile()
 
 
-if __name__ == "__main__":
-    response = etl_analyst.invoke(
-        {"messages":[HumanMessage(content="I want to extract the data from the API endpoint 'https://pokeapi.co/api/v2/pokemon' and save it to data/extract folder in the csv folder")]}
-    )
 
-#     response = etl_analyst.invoke(
-#          {"messages":[HumanMessage(content=f"""
-#             I want to transform the data stored in the 'D:\python\data-agent\data\extract\extracted_data.csv' file 
-#             and save the transformed data in the 'D:\python\data-agent\data\transform' folder in the csv format.
-#             The transformation should filter the data to show bulbasaur pokemon only.
-# """)]}
-#     )
 
-    for m in response["messages"]:
-      print(type(m).__name__, "->", m.content)
-    print(response["messages"][-1].content)
+# if __name__ == "__main__":
+#     # response = etl_analyst.invoke(
+#     #     {"messages":[HumanMessage(content="I want to extract the data from the API endpoint 'https://pokeapi.co/api/v2/pokemon' and save it to data/extract folder in the csv folder")]}
+#     # )
+
+# #     response = etl_analyst.invoke(
+# #          {"messages":[HumanMessage(content=f"""
+# #             I want to transform the data stored in the 'D:\python\data-agent\data\extract\extracted_data.csv' file 
+# #             and save the transformed data in the 'D:\python\data-agent\data\transform' folder in the csv format.
+# #             The transformation should filter the data to show bulbasaur pokemon only.
+# # """)]}
+# #     )
+
+#     for m in response["messages"]:
+#       print(type(m).__name__, "->", m.content)
+#     print(response["messages"][-1].content)

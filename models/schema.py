@@ -42,3 +42,10 @@ class JudgeSchema(BaseModel):
 class ETLAgentSchema(BaseModel):
     messages: Annotated[list, add_messages] = Field(..., description="List of messages processed by the ETL Agent.")
 
+class RouterSchema(BaseModel):
+    answer: Literal["sql", "etl"] = Field(..., description="Indicates whether the user's question related to SQL or ETL operations")
+
+class DataAgentSchema(BaseModel):
+    messages: Annotated[list, add_messages] = Field(..., description="List of messages processed by the Data Agent.")
+    route_response : str = Field(default="", description="The response from the router indicating whether to route to SQL or ETL operations")
+
