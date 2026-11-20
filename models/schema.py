@@ -44,4 +44,49 @@ class RouterSchema(BaseModel):
 class DataAgentSchema(BaseModel):
     messages: Annotated[list, add_messages] = Field(..., description="List of messages processed by the Data Agent.")
     route_response : str = Field(default="", description="The response from the router indicating whether to route to SQL or ETL operations")
+    data: str = Field(default="", description="SQL result that will be included in the email")
+    question: str = Field(default="", description="User's email request: recipient and what to write")
+    wants_email: str = Field(default="", description="User's yes/no answer to sending the result via email")
+    response: str = Field(default="", description="Final response from the email agent")
 
+
+# For Email
+class EmailState(BaseModel):
+    question: str = ""
+    data: str = ""  # SQL ka result yahan aayega
+    mail_reason: str = ""
+    recipient_name: str = ""
+    recipient_email: str = ""
+    subject: str = ""
+    body: str = ""
+    feedback: str = ""
+    feedback_count: int = 0
+    response: str = ""
+
+class UserDetails(BaseModel):
+    mail_reason: str = Field(
+        description="Reason of the email, like why user want to send this email"
+    )
+    recipient_name: str = Field(
+        description="recipient / reciever name, if available else ''"
+    )
+    recipient_email: str = Field(description="recipient / reciever email address")
+
+class DraftEmail(BaseModel):
+    subject: str = Field(
+        description=(
+            "A clear, concise email subject line that summarizes the purpose of the email. "
+            "Maximum 10 words (under 60 characters). Do not use quotes, emojis, or ALL CAPS."
+        )
+    )
+    body: str = Field(
+        description=(
+            "The complete email body in a professional and polite tone. "
+            "Start with a greeting using the recipient's name (use 'Hello,' if the name is unknown). "
+            "Clearly explain the reason for the email, include all relevant details given by the user, "
+            "and state any request or next step. "
+            "End with a courteous closing such as 'Best regards,' followed by the sender's name if available. "
+            "Do not include the subject line inside the body. "
+            "Do not invent facts, dates, or details that the user did not provide."
+        )
+    )
