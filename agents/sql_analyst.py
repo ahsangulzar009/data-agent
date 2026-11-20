@@ -46,7 +46,6 @@ def generate_sql_query(state: AgentSchema):
     generated_sql_query = llm.invoke(prompt)
 
     return {
-        "prompt_query_context": prompt,
         "generated_sql_query": generated_sql_query.content,
         "messages": [AIMessage(content=generated_sql_query.content)],
     }

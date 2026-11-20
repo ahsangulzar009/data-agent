@@ -11,10 +11,6 @@ class AgentSchema(BaseModel):
         ..., description="The original question asked by the user."
     )
     curated_ques: str = Field(default="", description="Curated user question")
-    prompt_query_context: str = Field(
-        default="",
-        description="A detailed prompt with SQL DB context that helps agent generate SQL Query.",
-    )
     is_safe: Literal["Yes", "No"] = Field(
         default="No",
         description="Indicates whether the generated SQL Query is safe to execute or not.",
