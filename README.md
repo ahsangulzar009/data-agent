@@ -16,6 +16,25 @@ A multi-agent data assistant built with **LangGraph** and **LangChain**. Ask a q
 
 No SQL knowledge, no waiting, and no risk of accidentally changing the data.
 
+### 📧 Email Agent
+
+**The problem it solves:** Once you have an answer — say, a sales report or a list of top customers — you usually want to share it with someone (your partner, a manager, a client). Opening your email app, writing a subject, pasting the data, and formatting it takes time. Most people just want to say *"send this to Hassan"* and be done.
+
+**How it helps:** After the SQL Analyst gives you a result, the agent asks if you want to email it. If you say yes, you just type something like:
+
+> *"I want to send this report to John on this email john@gmail.com"*
+
+The Email Agent:
+1. **Extracts the details** — recipient name, email address, and the reason for the email — from your plain-language instruction.
+2. **Drafts the email** using the LLM, automatically including the actual data (tables, numbers) from your SQL result in the body — no copy-pasting needed.
+3. **Shows you the draft** (subject + body) and asks for approval.
+4. **Lets you revise** — instead of "Yes", you can type feedback like *"make it shorter"* or *"add a friendly opening"*, and it will rewrite the draft.
+5. **Sends the email** once you approve it.
+
+So the whole flow becomes: **ask a question → get the answer → approve the email → done.**
+
+> **Note:** The recipient name and email are pulled from your natural-language instruction, so make sure the email address is spelled correctly before approving. The graph passes the original SQL result into the draft, so the data in the email is always the same as what you saw on screen — nothing is invented.
+
 ### 🔄 ETL Analyst
 
 **The problem it solves:** Getting data from an API, cleaning it and reshaping it normally needs someone who can write code. This makes that work possible with a simple instruction.
